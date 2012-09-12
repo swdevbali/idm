@@ -1,6 +1,5 @@
 package org.openforis.idm.metamodel.xml;
 
-import org.openforis.idm.metamodel.Configuration;
 import org.openforis.idm.metamodel.DefaultSurveyContext;
 import org.openforis.idm.metamodel.Survey;
 import org.openforis.idm.metamodel.SurveyContext;

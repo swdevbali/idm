@@ -333,6 +333,7 @@ public class Survey implements Serializable {
 	
 	public void setSchema(Schema schema) {
 		this.schema = schema;
+		schema.setSurvey(this);
 	}
 	
 	public ModelVersion getVersion(String name) {
@@ -364,13 +365,27 @@ public class Survey implements Serializable {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Configuration> getConfiguration() {
 		if ( configuration == null ) {
-			return (List<Configuration>) Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		} else {
 			return CollectionUtil.unmodifiableList(configuration.list);
 		}
+	}
+
+	public void addConfiguration(Configuration config) {
+		if ( configuration == null ) {
+			configuration = new ConfigurationWrapper();
+		}
+		configuration.addConfiguration(config);
+	}
+	
+	public void setConfiguration(int index, Configuration config) {
+		configuration.setConfiguration(index, config);
+	}
+	
+	public void removeConfiguration(Configuration config) {
+		configuration.removeConfiguration(config);
 	}
 	
 	public SurveyContext getContext() {

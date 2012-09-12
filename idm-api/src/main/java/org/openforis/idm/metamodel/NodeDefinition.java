@@ -6,6 +6,7 @@ package org.openforis.idm.metamodel;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,6 +21,7 @@ import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Transient;
 import org.simpleframework.xml.ElementMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.openforis.idm.metamodel.expression.SchemaPathExpression;
 import org.openforis.idm.metamodel.xml.internal.XmlInherited;
 import org.openforis.idm.metamodel.xml.internal.XmlParent;
@@ -97,6 +99,17 @@ public abstract class NodeDefinition extends Versionable implements Annotatable,
 		return annotations == null ? null : annotations.get(qname);
 	}
 
+	public void setAnnotation(QName qname, String value) {
+		if ( annotations == null ) {
+			annotations = new HashMap<QName, String>();
+		}
+		if (StringUtils.isNotBlank(value)) {
+			annotations.put(qname, value);
+		} else {
+			annotations.remove(qname);
+		}
+	}
+	
 	public Set<QName> getAnnotationNames() {
 		return CollectionUtil.unmodifiableSet(annotations.keySet());
 	}
@@ -117,7 +130,7 @@ public abstract class NodeDefinition extends Versionable implements Annotatable,
 		return schema;
 	}
 
-	protected void setSchema(Schema schema) {
+	public void setSchema(Schema schema) {
 		this.schema = schema;
 	}
 	
@@ -253,6 +266,44 @@ public abstract class NodeDefinition extends Versionable implements Annotatable,
 			}
 		}
 		return Collections.unmodifiableList(list);
+	}
+	
+	protected Prompt getPromptInstance(Prompt.Type type, String languageCode) {
+		if (prompts != null) {
+			for (Prompt prompt : prompts) {
+				if (prompt.getType().equals(type)) {
+					String promptLang = prompt.getLanguage();
+					if ( languageCode == null && promptLang == null ||
+						languageCode != null && languageCode.equals(promptLang) ) {
+						return prompt;
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	public String getPrompt(Prompt.Type type, String languageCode) {
+		Prompt prompt = getPromptInstance(type, languageCode);
+		return prompt != null ? prompt.getText(): null;
+	}
+	
+	public void setPrompt(Prompt.Type type, String languageCode, String text) {
+		Prompt oldPrompt = getPromptInstance(type, languageCode);
+		if ( StringUtils.isNotBlank(text)) {
+			Prompt newPrompt = new Prompt(type, languageCode, text);
+			if ( oldPrompt != null ) {
+				int index = prompts.indexOf(oldPrompt);
+				prompts.set(index, newPrompt);
+			} else {
+				if ( prompts == null ) {
+					prompts = new ArrayList<Prompt>();
+				}
+				prompts.add(newPrompt);
+			}
+		} else if ( oldPrompt != null ) {
+			prompts.remove(oldPrompt);
+		}
 	}
 	
 	public List<LanguageSpecificText> getDescriptions() {

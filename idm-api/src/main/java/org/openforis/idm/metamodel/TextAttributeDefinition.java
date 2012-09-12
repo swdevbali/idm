@@ -60,6 +60,11 @@ public class TextAttributeDefinition extends AttributeDefinition implements KeyA
 	public boolean isKey() {
 		return this.key == null ? false : key;
 	}
+	
+	@Override
+	public void setKey(boolean key) {
+		this.key = key;
+	}
 
 	@Override
 	public Node<?> createNode() {

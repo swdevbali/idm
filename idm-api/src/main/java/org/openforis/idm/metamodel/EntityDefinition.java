@@ -90,7 +90,10 @@ public class EntityDefinition extends NodeDefinition {
 		if (childDefinitions == null) {
 			childDefinitions = new ArrayList<NodeDefinition>();
 		}
+		Schema schema = getSchema();
+		defn.setId(schema.nextNodeDefinitionId());
 		childDefinitions.add(defn);
+		defn.setParentDefinition(this);
 	}
 
 	public List<AttributeDefinition> getKeyAttributeDefinitions() {
