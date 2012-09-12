@@ -6,25 +6,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-/*import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;*/
+import org.openforis.idm.model.NodePathPointer;
+import org.openforis.idm.util.CollectionUtil;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Order;
 import org.simpleframework.xml.Root;
 import org.simpleframework.xml.Transient;
-import org.simpleframework.xml.convert.Convert;
-
-import org.openforis.idm.metamodel.xml.internal.ConfigurationXmlAdapter;
-import org.openforis.idm.model.NodePathPointer;
-import org.openforis.idm.util.CollectionUtil;
 
 
 /**
@@ -412,48 +400,6 @@ public class Survey implements Serializable {
 		return surveyDependencies;
 	}
 	
-	/**
-	 * Workaround for JAXB since @XmlAnyElement, @XmlElementWrapper and @XmlJavaTypeAdapter 
-	 * wouldn't play nice together
-	 */
-	//@XmlAccessorType(XmlAccessType.FIELD)
-	//@Order
-	private static class ConfigurationWrapper implements Serializable {
-
-		private static final long serialVersionUID = 1L;
-		
-		//@XmlAnyElement
-		@ElementList(inline = true, required = false)
-		@Convert(ConfigurationXmlAdapter.class)
-		List<Configuration> list;
-
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + ((list == null) ? 0 : list.hashCode());
-			return result;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			ConfigurationWrapper other = (ConfigurationWrapper) obj;
-			if (list == null) {
-				if (other.list != null)
-					return false;
-			} else if (!list.equals(other.list))
-				return false;
-			return true;
-		}
-		
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;

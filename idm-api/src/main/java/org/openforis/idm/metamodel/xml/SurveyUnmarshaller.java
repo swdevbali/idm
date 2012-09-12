@@ -14,11 +14,15 @@ import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.openforis.idm.metamodel.ConfigurationWrapper;
 import org.openforis.idm.metamodel.Survey;
 import org.openforis.idm.metamodel.SurveyContext;
 import org.openforis.idm.metamodel.xml.internal.TransformMatcher;
 import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.convert.Registry;
+import org.simpleframework.xml.convert.RegistryStrategy;
 import org.simpleframework.xml.core.Persister;
+import org.simpleframework.xml.strategy.Strategy;
 import org.xml.sax.SAXException;
 
 /**
@@ -31,6 +35,7 @@ public class SurveyUnmarshaller {
 	private static final String XML_SCHEMA_LANGUAGE = "http://www.w3.org/2001/XMLSchema";
 	private static final String IDML_SCHEMA_RESOURCE_PATH = "/idml3.xsd";
 //	private Unmarshaller unmarshaller;
+	private Class<? extends ConfigurationWrapperConverter<? extends ConfigurationWrapper>> configurationWrapperConverterClass;
 	private Class<? extends Survey> surveyClass;
 	private SurveyContext surveyContext;
 	
@@ -45,9 +50,10 @@ public class SurveyUnmarshaller {
 	*/
 	
 	public SurveyUnmarshaller(Class<? extends Survey> surveyClass,
-			SurveyContext surveyContext) {
+			SurveyContext surveyContext, Class<? extends ConfigurationWrapperConverter<? extends ConfigurationWrapper>> configurationWrapperConverterClass) {
 		this.surveyClass = surveyClass;
 		this.surveyContext = surveyContext;
+		this.configurationWrapperConverterClass = configurationWrapperConverterClass;
 	}
 
 	public Survey unmarshal(String filename) throws IOException, InvalidIdmlException {
@@ -87,8 +93,13 @@ public class SurveyUnmarshaller {
 //			Strategy strategy = new RegistryStrategy(registry);
 //			Serializer serializer = new Persister(strategy);
 			
+			Registry registry = new Registry();
+			Strategy strategy = new RegistryStrategy(registry);
+			if ( configurationWrapperConverterClass != null ) {
+				registry.bind(ConfigurationWrapper.class, configurationWrapperConverterClass);
+			}
 			TransformMatcher matcher = new TransformMatcher();
-			Serializer serializer = new Persister(matcher);
+			Serializer serializer = new Persister(strategy, matcher);
 			Survey survey = serializer.read(surveyClass, is, false);
 			survey.setSurveyContext(surveyContext);
 			/*

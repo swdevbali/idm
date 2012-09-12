@@ -16,21 +16,22 @@ public class IdmlBindingContext {
 	private Class<? extends Survey> surveyClass;
 	private SurveyContext surveyContext;
 	
-	private ConfigurationAdapter<? extends Configuration> configurationAdapter;
+	private Class<? extends ConfigurationWrapperConverter<?>> configurationWrapperConverterClass;
 
 	public IdmlBindingContext() {
 		this(new DefaultSurveyContext());
 	}
 	
 	public IdmlBindingContext(SurveyContext surveyContext) {
-		this(Survey.class, surveyContext);
+		this(Survey.class, surveyContext, null);
 	}
 	
-	public IdmlBindingContext(Class<? extends Survey> surveyClass,SurveyContext surveyContext) {
+	public IdmlBindingContext(Class<? extends Survey> surveyClass, SurveyContext surveyContext, Class<? extends ConfigurationWrapperConverter<?>> configurationWrapperConverterClass) {
 //		try {
 			this.surveyClass = surveyClass;
 			//this.surveyJaxbContext = JAXBContext.newInstance(surveyClass);
 			this.surveyContext = surveyContext;
+			this.configurationWrapperConverterClass = configurationWrapperConverterClass;
 //		} catch (JAXBException e) {
 //			throw new RuntimeException(e);
 //		}
@@ -40,13 +41,15 @@ public class IdmlBindingContext {
 		DEFAULT_CONFIG_ADAPTER = new ConfigurationXmlAdapter(DefaultConfigurationAdapter.getInstance());
 	}
 	
-	public ConfigurationAdapter<? extends Configuration> getConfigurationAdapter() {
-		return configurationAdapter;
-	}
-
-	public void setConfigurationAdapter(ConfigurationAdapter<? extends Configuration> configurationAdapter) {
-		this.configurationAdapter = configurationAdapter;
-	}
+//	public ConfigurationAdapter<? extends Configuration> getConfigurationAdapter() {
+//		return configurationAdapter;
+//	}
+//
+//	public void setConfigurationAdapter(ConfigurationAdapter<? extends Configuration> configurationAdapter) {
+//		this.configurationAdapter = configurationAdapter;
+//	}
+	
+	
 	
 	public SurveyMarshaller createSurveyMarshaller(){
 //		try {
@@ -64,25 +67,23 @@ public class IdmlBindingContext {
 //			throw new RuntimeException(e);
 //		}
 	}
-	
-	/*
-	public SurveyUnmarshaller createSurveyUnmarshaller(){
-		try {
-			Unmarshaller unmarshaller = surveyJaxbContext.createUnmarshaller();
-			if ( configurationAdapter == null ) {
-				unmarshaller.setAdapter(DEFAULT_CONFIG_ADAPTER);
-			} else {
-				unmarshaller.setAdapter(new ConfigurationXmlAdapter(configurationAdapter));
-			}
-			return new SurveyUnmarshaller(unmarshaller, surveyClass, surveyContext);
-		} catch (JAXBException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	*/
+//	
+//	public SurveyUnmarshaller createSurveyUnmarshaller(){
+//		try {
+//			Unmarshaller unmarshaller = surveyJaxbContext.createUnmarshaller();
+//			if ( configurationAdapter == null ) {
+//				unmarshaller.setAdapter(DEFAULT_CONFIG_ADAPTER);
+//			} else {
+//				unmarshaller.setAdapter(new ConfigurationXmlAdapter(configurationAdapter));
+//			}
+//			return new SurveyUnmarshaller(surveyClass, surveyContext);
+//		} catch (JAXBException e) {
+//			throw new RuntimeException(e);
+//		}
+//	}
 	
 	public SurveyUnmarshaller createSurveyUnmarshaller(){
-		return new SurveyUnmarshaller(surveyClass, surveyContext);
+		return new SurveyUnmarshaller(surveyClass, surveyContext, configurationWrapperConverterClass);
 	}
 
 /*	
